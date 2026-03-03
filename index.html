@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HARMONY | Concierge</title>
+    <style>
+        :root {
+            --sha-bg: #f8f7f5; 
+            --sha-gold: #bfa17a; 
+            --sha-charcoal: #333333;
+            --sha-stone: #a8a096; 
+            --sha-white: #ffffff;
+        }
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--sha-bg); 
+            color: var(--sha-charcoal); 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh;
+        }
+        .header { text-align: center; margin-bottom: 30px; margin-top: 20px; }
+        h1 { font-family: 'Cinzel', serif; letter-spacing: 5px; font-size: 1.4rem; margin-bottom: 8px; color: var(--sha-charcoal); }
+        .line { width: 30px; height: 1px; background: var(--sha-gold); margin: 0 auto 10px; }
+        
+        .search-box { 
+            width: 100%; 
+            max-width: 400px; 
+            background: white; 
+            padding: 40px 20px; 
+            border-radius: 4px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+            text-align: center;
+            border: 1px solid #eee;
+        }
+        label { 
+            display: block; 
+            text-transform: uppercase; 
+            font-size: 0.65rem; 
+            letter-spacing: 2px; 
+            color: var(--sha-stone); 
+            margin-bottom: 20px; 
+            font-weight: 600;
+        }
+        input { 
+            width: 80%; 
+            border: none; 
+            border-bottom: 1px solid var(--sha-gold); 
+            text-align: center; 
+            font-size: 2.5rem; 
+            padding: 10px 0; 
+            outline: none; 
+            font-family: 'Cinzel', serif; 
+            color: var(--sha-charcoal);
+            background: transparent;
+        }
+        
+        .guest-card { 
+            width: 100%; 
+            max-width: 400px; 
+            margin-top: 25px; 
+            background: white; 
+            padding: 35px; 
+            box-sizing: border-box; 
+            display: none; 
+            border-top: 3px solid var(--sha-gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s ease;
+        }
+        .guest-name { font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 25px; color: var(--sha-charcoal); text-align: center; letter-spacing: 1px; }
+        .info-row { margin-bottom: 20px; }
+        .item-label { font-size: 0.6rem; text-transform: uppercase; color: var(--sha-gold); font-weight: 700; letter-spacing: 1.5px; margin-bottom: 5px; }
+        .item-value { font-size: 1.05rem; color: var(--sha-charcoal); border-bottom: 1px solid #f9f9f9; padding-bottom: 8px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Ocultar flechas del input number */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="header">
+        <h1>HARMONY</h1>
+        <div class="line"></div>
+        <div style="font-size: 0.65rem; letter-spacing: 3px; color: var(--sha-stone); text-transform: uppercase;">Lounge Concierge</div>
+    </div>
+
+    <div class="search-box">
+        <label>Habitación / Room</label>
+        <input type="number" id="roomInput" placeholder="000" oninput="checkRoom()" autofocus>
+    </div>
+
+    <div id="guestCard" class="guest-card">
+        <div class="guest-name" id="gName">--</div>
+        
+        <div class="info-row">
+            <div class="item-label">Té Prescrito / Prescribed Tea</div>
+            <div class="item-value" id="gTea">--</div>
+        </div>
+
+        <div class="info-row">
+            <div class="item-label">Merienda del Día / Snack</div>
+            <div class="item-value" id="gSnack">--</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="item-label" style="color: #a94442;">Restricciones / Dietaries</div>
+            <div class="item-value" style="font-size: 0.9rem; color: #a94442;" id="gNotes">--</div>
+        </div>
+    </div>
+
+    <script>
+        // Esta es la base de datos que el staff actualizaría diariamente
+        const guests = {
+            "101": { name: "Mr. Alexander Thompson", tea: "Shiitake Tea", snack: "Bowl de Fruta", notes: "No Gluten / No Sugar" },
+            "202": { name: "Ms. Elena Rodriguez", tea: "Té de Verduras Dulces", snack: "Tapioca de Coco", notes: "Nut Allergy" },
+            "305": { name: "Mr. Jean-Pierre", tea: "Zanahoria Daikon", snack: "Bowl de Fruta", notes: "No Dairy" },
+            "410": { name: "Mrs. Sofia Müller", tea: "Té de Hinojo", snack: "Tapioca de Coco", notes: "Vegan" },
+            "500": { name: "VIP Guest", tea: "Té de Loto", snack: "Merienda Especial", notes: "Low Sodium" }
+        };
+
+        function checkRoom() {
+            const room = document.getElementById('roomInput').value;
+            const card = document.getElementById('guestCard');
+            
+            if (guests[room]) {
+                document.getElementById('gName').innerText = guests[room].name;
+                document.getElementById('gTea').innerText = guests[room].tea;
+                document.getElementById('gSnack').innerText = guests[room].snack;
+                document.getElementById('gNotes').innerText = guests[room].notes;
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
